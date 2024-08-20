@@ -16,7 +16,7 @@ public class RolePermission implements Serializable {
     /**
      * 
      */
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Integer id;
 
     /**
