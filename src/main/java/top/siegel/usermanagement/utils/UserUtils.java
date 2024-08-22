@@ -2,6 +2,7 @@ package top.siegel.usermanagement.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import top.siegel.usermanagement.entity.LoginLog;
 import top.siegel.usermanagement.entity.User;
@@ -117,7 +118,8 @@ public class UserUtils {
         if (!User.Status.ENABLE.equals(user.getStatus())) {
             return ResponseVO.error(StatusEnum.USER_DISABLED);
         }
-        if (!user.getPassword().equals(password)) {
+        String encryptPassword = DigestUtils.md5DigestAsHex(password.getBytes());
+        if (!user.getPassword().equals(encryptPassword)) {
             return ResponseVO.error(StatusEnum.PASSWORD_ERROR);
         }
         List<Map<String, Object>> roleAndPermissionInfo = instance.userService.getUserRoleAndPermissionsByUserId(Collections.singletonList(user.getId()));
