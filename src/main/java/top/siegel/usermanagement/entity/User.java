@@ -111,6 +111,13 @@ public class User implements Serializable {
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
+    public String generateAvatarName(String suffix) {
+        if (!Arrays.asList(".jpg", ".jpeg", ".png", ".gif").contains(suffix)) {
+            suffix = ".jpg";
+        }
+        return id + "_" + userName + suffix;
+    }
+
     public static class Status {
         // 字符串常量用于放在注解中
         public static final String DISABLED_STR = "0";

@@ -22,7 +22,7 @@ public class LoginLog implements Serializable {
     /**
      * 用户id
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 用户ip
@@ -47,4 +47,12 @@ public class LoginLog implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public LoginLog(Long userId, String ip, Date loginTime, Integer platform) {
+        this.userId = userId;
+        this.ip = ip;
+        this.loginTime = loginTime;
+        this.platform = platform;
+    }
+
 }
