@@ -7,13 +7,13 @@
     <resultMap id="BaseResultMap" type="top.siegel.usermanagement.entity.RolePermission">
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="roleId" column="role_id" jdbcType="INTEGER"/>
-            <result property="permission" column="permission" jdbcType="INTEGER"/>
+            <result property="permissionId" column="permission_id" jdbcType="INTEGER"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="isDeleted" column="is_deleted" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,role_id,permission,
+        id,role_id,permission_id,
         create_time,is_deleted
     </sql>
 </mapper>

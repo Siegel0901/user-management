@@ -1,7 +1,11 @@
 package top.siegel.usermanagement.mapper;
 
+import org.apache.ibatis.annotations.Select;
+import top.siegel.usermanagement.entity.Permission;
 import top.siegel.usermanagement.entity.RolePermission;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
 * @author Siegel
@@ -10,7 +14,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity top.siegel.usermanagement.entity.RolePermission
 */
 public interface RolePermissionMapper extends BaseMapper<RolePermission> {
-
+    @Select("SELECT p.* FROM permission p " +
+            "LEFT JOIN role_permission rp ON p.id = rp.permission_id " +
+            "WHERE rp.role_id = #{roleId}")
+    List<Permission> getPermissionsByRoleId(Integer roleId);
 }
 
 

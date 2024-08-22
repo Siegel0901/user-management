@@ -1,7 +1,7 @@
 package top.siegel.usermanagement.service;
 
-import top.siegel.usermanagement.entity.Role;
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.siegel.usermanagement.entity.Role;
 
 /**
 * @author Siegel
@@ -9,5 +9,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-08-20 19:59:49
 */
 public interface RoleService extends IService<Role> {
+    boolean existsByName(String roleName, boolean throwExceptionWhenExists) throws RuntimeException;
 
 }

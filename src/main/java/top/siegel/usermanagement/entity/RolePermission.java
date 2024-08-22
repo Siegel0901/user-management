@@ -27,7 +27,7 @@ public class RolePermission implements Serializable {
     /**
      * 权限id
      */
-    private Integer permission;
+    private Integer permissionId;
 
     /**
      * 创建时间

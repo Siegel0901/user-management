@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class User implements Serializable {
      *
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 用户名称
@@ -109,4 +110,28 @@ public class User implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public static class Status {
+        // 字符串常量用于放在注解中
+        public static final String DISABLED_STR = "0";
+        public static final String ENABLED_STR = "1";
+        public static final String DELETED_STR = "2";
+
+        public static final Integer DISABLE = Integer.parseInt(DISABLED_STR);
+        public static final Integer ENABLE = Integer.parseInt(ENABLED_STR);
+        public static final Integer DELETED = Integer.parseInt(DELETED_STR);
+
+        public static final String DESC = DISABLED_STR + ": 禁用, " + ENABLED_STR + ": 启用, " + DELETED_STR + ": 删除";
+    }
+
+    public static class Gender {
+        public static final Integer MALE = 0;
+        public static final Integer FEMALE = 1;
+    }
+
+    // 排序字段
+    public static final String ORDER_FIELDS = "create_time,user_name,true_name,email,gender,address,introduction,phone,status,update_time";
+    public static final List<String> ORDER_FIELD_LIST = Arrays.asList(ORDER_FIELDS.split(","));
+
+
 }

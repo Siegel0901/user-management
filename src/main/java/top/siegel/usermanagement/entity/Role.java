@@ -52,4 +52,10 @@ public class Role implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public static class Status {
+        public static final Integer DELETED = 0;
+        public static final Integer ENABLE = 1;
+    }
+
 }
