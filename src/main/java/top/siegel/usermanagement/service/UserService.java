@@ -1,8 +1,10 @@
 package top.siegel.usermanagement.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
+import top.siegel.usermanagement.dto.UserDTO;
 import top.siegel.usermanagement.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.siegel.usermanagement.exceptions.CustomRuntimeException;
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,15 @@ import java.util.Map;
 * @createDate 2024-08-20 19:59:49
 */
 public interface UserService extends IService<User> {
+    List<Map<String, Object>> getUserRoleAndPermissionsByUserId(List<Long> userIds);
+
+    Page<User> getUserList(String userName, String minCreateTime, String maxCreateTime, String orderBy, String orderMethod, Integer page, Integer pageSize);
+
+    User addOneUser(UserDTO userDTO) throws CustomRuntimeException;
+
+    Map<String, Object> batchCreateUser(List<UserDTO> userDTOS);
+
+
     /**
      * 判断用户名是否存在
      * @param userName 用户名

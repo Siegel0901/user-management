@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.siegel.usermanagement.entity.Role;
+import top.siegel.usermanagement.enums.StatusEnum;
+import top.siegel.usermanagement.exceptions.CustomRuntimeException;
 import top.siegel.usermanagement.mapper.RoleMapper;
 import top.siegel.usermanagement.service.RoleService;
+import top.siegel.usermanagement.utils.DataUtils;
 
 /**
  * @author Siegel
@@ -24,10 +27,13 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
     }
 
     @Override
-    public boolean existsByName(String roleName, boolean throwExceptionWhenExists) throws RuntimeException {
+    public boolean existsByName(String roleName, boolean throwExceptionWhenExists) throws CustomRuntimeException {
+        if (DataUtils.checkEmptyString(roleName)) {
+            throw new CustomRuntimeException(StatusEnum.ROLE_NAME_NOT_EMPTY);
+        }
         Role role = roleMapper.selectOne(new QueryWrapper<Role>().eq("name", roleName.trim()).eq("status", Role.Status.ENABLE));
         if (role != null && throwExceptionWhenExists) {
-            throw new RuntimeException();
+            throw new CustomRuntimeException(StatusEnum.ROLE_NAME_EXISTS);
         }
         return role != null;
     }
