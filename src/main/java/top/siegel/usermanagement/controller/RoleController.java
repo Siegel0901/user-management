@@ -7,15 +7,18 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import top.siegel.usermanagement.dto.RoleDTO;
 import top.siegel.usermanagement.entity.Permission;
 import top.siegel.usermanagement.entity.Role;
 import top.siegel.usermanagement.entity.RolePermission;
 import top.siegel.usermanagement.enums.CommonStatusEnum;
 import top.siegel.usermanagement.enums.StatusEnum;
+import top.siegel.usermanagement.exceptions.CustomRuntimeException;
 import top.siegel.usermanagement.service.PermissionService;
 import top.siegel.usermanagement.service.RolePermissionService;
 import top.siegel.usermanagement.service.RoleService;
 import top.siegel.usermanagement.service.UserRoleService;
+import top.siegel.usermanagement.utils.ServletUtils;
 import top.siegel.usermanagement.vo.ResponseVO;
 
 import java.util.*;
@@ -34,6 +37,7 @@ import java.util.stream.Collectors;
 @Api(tags = "role-api")
 @RequestMapping("/roles")
 public class RoleController {
+
     private final RoleService roleService;
     private final UserRoleService userRoleService;
     private final RolePermissionService rolePermissionService;
@@ -51,16 +55,17 @@ public class RoleController {
     /**
      * 添加角色
      *
-     * @param role 角色信息
+     * @param roleInfo 角色信息
      */
     @ApiOperation(value = "添加角色")
     @PostMapping
-    public ResponseVO<String> addRole(@RequestBody Role role) {
+    public ResponseVO<String> addRole(@RequestBody RoleDTO roleInfo) {
         try {
-            roleService.existsByName(role.getName(), true);
-        } catch (RuntimeException e) {
-            return ResponseVO.error(e.getMessage());
+            roleService.existsByName(roleInfo.getName(), true);
+        } catch (CustomRuntimeException e) {
+            return ResponseVO.error(e.getStatusCode());
         }
+        Role role = roleInfo.toEntity(Role.class);
         role.setStatus(Role.Status.ENABLE);
         role.setCreateTime(new Date());
         role.setUpdateTime(new Date());
@@ -78,8 +83,8 @@ public class RoleController {
     public ResponseVO<Boolean> existsByName(@RequestParam @ApiParam(value = "角色名", required = true) String name) {
         try {
             return ResponseVO.success(roleService.existsByName(name, false));
-        } catch (RuntimeException e) {
-            return ResponseVO.error(e.getMessage());
+        } catch (CustomRuntimeException e) {
+            return ResponseVO.error(e.getStatusCode());
         }
     }
 
@@ -102,20 +107,25 @@ public class RoleController {
     /**
      * 修改角色信息
      *
-     * @param role 角色信息
+     * @param roleInfo 角色信息
      */
     @ApiOperation(value = "修改角色信息")
     @PutMapping
-    public ResponseVO<String> updateRole(@RequestBody Role role) {
-        Role originRole = roleService.getById(role.getId());
-        if (originRole == null || !originRole.getStatus().equals(Role.Status.ENABLE)) {
+    public ResponseVO<String> updateRole(@RequestBody RoleDTO roleInfo) {
+        Role role = roleService.getById(roleInfo.getId());
+        if (role == null || !role.getStatus().equals(Role.Status.ENABLE)) {
             return ResponseVO.error(StatusEnum.ROLE_NOT_FOUND);
         }
         try {
-            roleService.existsByName(role.getName(), true);
-        } catch (RuntimeException e) {
-            return ResponseVO.error(e.getMessage());
+            roleService.existsByName(roleInfo.getName(), true);
+        } catch (CustomRuntimeException e) {
+            return ResponseVO.error(e.getStatusCode());
         }
+        if (roleInfo.isNotModified(role)) {
+            return ResponseVO.error(StatusEnum.ROLE_INFO_NOT_CHANGED);
+        }
+        roleInfo.copyDataTo(role);
+        role.setUpdateTime(new Date());
         roleService.updateById(role);
         return ResponseVO.success();
     }
@@ -162,9 +172,9 @@ public class RoleController {
     /**
      * 添加角色权限
      *
-     * @param roleId        角色id
+     * @param roleId           角色id
      * @param permissionIds 权限id列表
-     * @param deleteOld     是否删除原有权限
+     * @param deleteOld        是否删除原有权限
      */
     @ApiOperation(value = "添加角色权限")
     @PostMapping("/{roleId}/permissions")
@@ -201,6 +211,10 @@ public class RoleController {
             rolePermissionList.add(rolePermission);
         }
         rolePermissionService.saveBatch(rolePermissionList);
+        // 更新用户权限缓存
+        List<Map<String, Object>> userIdList = userRoleService.getUserIdsByRoleIds(Collections.singletonList(roleId));
+        List<Long> userIds = userIdList.stream().map(map -> (Long) map.get("userId")).collect(Collectors.toList());
+        ServletUtils.updatePermission(userIds);
         return ResponseVO.success();
     }
 
