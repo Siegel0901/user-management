@@ -14,7 +14,6 @@ import top.siegel.usermanagement.mapper.UserMapper;
 import top.siegel.usermanagement.service.UserRoleService;
 import top.siegel.usermanagement.service.UserService;
 import top.siegel.usermanagement.utils.DataUtils;
-import top.siegel.usermanagement.utils.IdGenerator;
 import top.siegel.usermanagement.utils.UserUtils;
 
 import java.util.*;
@@ -68,7 +67,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         existsByUserName(userInfo.getUserName(), true);
         User user = userInfo.toEntity(User.class);
         Date date = new Date();
-        user.setId(IdGenerator.nextId());
         user.setStatus(User.Status.ENABLE);
         user.setCreateTime(date);
         user.setUpdateTime(date);
@@ -107,7 +105,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }
             addedUserNameSet.add(userDTO.getUserName());
             User user = userDTO.toEntity(User.class);
-            user.setId(IdGenerator.nextId());
             user.setStatus(User.Status.ENABLE);
             user.setCreateTime(date);
             user.setUpdateTime(date);
