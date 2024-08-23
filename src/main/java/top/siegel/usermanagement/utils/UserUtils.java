@@ -118,8 +118,7 @@ public class UserUtils {
         if (!User.Status.ENABLE.equals(user.getStatus())) {
             return ResponseVO.error(StatusEnum.USER_DISABLED);
         }
-        String encryptPassword = DigestUtils.md5DigestAsHex(password.getBytes());
-        if (!user.getPassword().equals(encryptPassword)) {
+        if (!user.getPassword().equals(password)) {
             return ResponseVO.error(StatusEnum.PASSWORD_ERROR);
         }
         List<Map<String, Object>> roleAndPermissionInfo = instance.userService.getUserRoleAndPermissionsByUserId(Collections.singletonList(user.getId()));
